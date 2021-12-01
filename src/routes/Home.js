@@ -1,39 +1,50 @@
 import {
   addDoc,
   collection,
-  getDocs,
+  onSnapshot,
+  orderBy,
   query,
-  serverTimestamp,
 } from "@firebase/firestore";
 import { dbService } from "fbase";
-import React, { useEffect } from "react";
-import { useState } from "react/cjs/react.development";
+import React, { useEffect, useState } from "react";
 
-const Home = () => {
+const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
 
   useEffect(() => {
-    getNweets();
+    //getNweets();
+    const q = query(
+      collection(dbService, "nweets"),
+      orderBy("createAt", "desc")
+    );
+    onSnapshot(q, (snapshot) => {
+      const nweetArr = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNweets(nweetArr);
+    });
   }, []);
 
-  const getNweets = async () => {
-    const q = query(collection(dbService, "nweets"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((document) => {
-      const nweetObj = {
-        ...document.data(),
-        id: document.id,
-      };
-      setNweets((prev) => [nweetObj, ...prev]);
-    });
-  };
+  //   const getNweets = async () => {
+  //     const q = query(collection(dbService, "nweets"));
+  //     const querySnapshot = await getDocs(q);
+  //     querySnapshot.forEach((document) => {
+  //       const nweetObj = {
+  //         ...document.data(),
+  //         id: document.id,
+  //       };
+  //       setNweets((prev) => [nweetObj, ...prev]);
+  //     });
+  //   };
 
   const onSubmit = async (event) => {
     event.preventDefault();
     await addDoc(collection(dbService, "nweets"), {
-      nweet,
+      text: nweet,
       createAt: Date.now(),
+      userId: userObj.uid,
     });
     setNweet("");
   };
@@ -59,7 +70,7 @@ const Home = () => {
       <div>
         {nweets.map((nweet) => (
           <div key={nweet.id}>
-            <h4>{nweet.nweet}</h4>
+            <h4>{nweet.text}</h4>
           </div>
         ))}
       </div>
