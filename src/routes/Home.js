@@ -5,9 +5,11 @@ import {
   orderBy,
   query,
 } from "@firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 import Nweet from "components/Nweet";
-import { dbService } from "fbase";
+import { dbService, storageService } from "fbase";
 import React, { useEffect, useRef, useState } from "react";
+import { ref, uploadString } from "@firebase/storage";
 
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
@@ -32,11 +34,14 @@ const Home = ({ userObj }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await addDoc(collection(dbService, "nweets"), {
-      text: nweet,
-      createAt: Date.now(),
-      userId: userObj.uid,
-    });
+    const fileRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
+    const response = await uploadString(fileRef, preview, "data_url");
+    console.log(response);
+    // await addDoc(collection(dbService, "nweets"), {
+    //   text: nweet,
+    //   createAt: Date.now(),
+    //   userId: userObj.uid,
+    // });
     setNweet("");
   };
   const onChange = (event) => {
@@ -55,7 +60,7 @@ const Home = ({ userObj }) => {
     reader.readAsDataURL(theFile);
     reader.onload = (event) => {
       const {
-        target: { result },
+        currentTarget: { result },
       } = event;
       setPreview(result);
     };
