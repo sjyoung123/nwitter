@@ -49,6 +49,7 @@ const Home = ({ userObj }) => {
     await addDoc(collection(dbService, "nweets"), nweetObject);
     setNweet("");
     setPreview("");
+    fileInputRef.current.value = "";
   };
   const onChange = (event) => {
     const {
