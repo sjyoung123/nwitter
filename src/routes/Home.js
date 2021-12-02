@@ -12,9 +12,9 @@ import React, { useEffect, useState } from "react";
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
+  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
-    //getNweets();
     const q = query(
       collection(dbService, "nweets"),
       orderBy("createAt", "desc")
@@ -27,18 +27,6 @@ const Home = ({ userObj }) => {
       setNweets(nweetArr);
     });
   }, []);
-
-  //   const getNweets = async () => {
-  //     const q = query(collection(dbService, "nweets"));
-  //     const querySnapshot = await getDocs(q);
-  //     querySnapshot.forEach((document) => {
-  //       const nweetObj = {
-  //         ...document.data(),
-  //         id: document.id,
-  //       };
-  //       setNweets((prev) => [nweetObj, ...prev]);
-  //     });
-  //   };
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -56,6 +44,25 @@ const Home = ({ userObj }) => {
     setNweet(value);
   };
 
+  const onImageChange = (event) => {
+    const {
+      target: { files },
+    } = event;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(theFile);
+    reader.onload = (event) => {
+      const {
+        target: { result },
+      } = event;
+      setPreview(result);
+    };
+  };
+
+  const onPreviewClear = () => {
+    setPreview(null);
+  };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -66,7 +73,14 @@ const Home = ({ userObj }) => {
           placeholder="What's on your mind?"
           maxLength={120}
         />
+        <input type="file" accept="image/*" onChange={onImageChange} />
         <input type="submit" value="Nweet" />
+        {preview && (
+          <div>
+            <img src={preview} width="50px" height="50px" />
+            <input type="submit" value="Clear" onClick={onPreviewClear} />
+          </div>
+        )}
       </form>
       <div>
         {nweets.map((nweet) => (
