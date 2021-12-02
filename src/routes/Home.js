@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Nweet from "components/Nweet";
 import { dbService, storageService } from "fbase";
 import React, { useEffect, useRef, useState } from "react";
-import { ref, uploadString } from "@firebase/storage";
+import { getDownloadURL, ref, uploadString } from "@firebase/storage";
 
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
@@ -34,15 +34,21 @@ const Home = ({ userObj }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const fileRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
-    const response = await uploadString(fileRef, preview, "data_url");
-    console.log(response);
-    // await addDoc(collection(dbService, "nweets"), {
-    //   text: nweet,
-    //   createAt: Date.now(),
-    //   userId: userObj.uid,
-    // });
+    let previewUrl = "";
+    if (preview) {
+      const previewRef = ref(storageService, `${userObj.uid}/${Date.now()}`);
+      await uploadString(previewRef, preview, "data_url");
+      previewUrl = await getDownloadURL(previewRef);
+    }
+    const nweetObject = {
+      text: nweet,
+      createAt: Date.now(),
+      userId: userObj.uid,
+      previewUrl,
+    };
+    await addDoc(collection(dbService, "nweets"), nweetObject);
     setNweet("");
+    setPreview("");
   };
   const onChange = (event) => {
     const {

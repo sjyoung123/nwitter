@@ -51,6 +51,9 @@ const Nweet = ({ nweetObj, isOwner }) => {
       ) : (
         <>
           <h4>{nweetObj.text}</h4>
+          {nweetObj.previewUrl && (
+            <img src={nweetObj.previewUrl} width="50px" height="50px" />
+          )}
           {isOwner && (
             <>
               <button onClick={toggleEdit}>Edit</button>
