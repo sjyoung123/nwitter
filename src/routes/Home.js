@@ -7,12 +7,14 @@ import {
 } from "@firebase/firestore";
 import Nweet from "components/Nweet";
 import { dbService } from "fbase";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
   const [preview, setPreview] = useState(null);
+
+  const fileInputRef = useRef();
 
   useEffect(() => {
     const q = query(
@@ -61,6 +63,7 @@ const Home = ({ userObj }) => {
 
   const onPreviewClear = () => {
     setPreview(null);
+    fileInputRef.current.value = "";
   };
 
   return (
@@ -73,7 +76,12 @@ const Home = ({ userObj }) => {
           placeholder="What's on your mind?"
           maxLength={120}
         />
-        <input type="file" accept="image/*" onChange={onImageChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={onImageChange}
+          ref={fileInputRef}
+        />
         <input type="submit" value="Nweet" />
         {preview && (
           <div>
