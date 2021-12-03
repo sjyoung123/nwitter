@@ -25,17 +25,12 @@ const Auth = () => {
     }
   };
   const onSubmit = async (event) => {
-    let data;
     try {
       event.preventDefault();
       if (newAccount) {
-        data = await createUserWithEmailAndPassword(
-          authService,
-          email,
-          password
-        );
+        await createUserWithEmailAndPassword(authService, email, password);
       } else {
-        data = await signInWithEmailAndPassword(authService, email, password);
+        await signInWithEmailAndPassword(authService, email, password);
       }
     } catch (errorMsg) {
       setError(errorMsg.message);
@@ -46,8 +41,9 @@ const Auth = () => {
     const {
       target: { name },
     } = event;
+
     let provider;
-    let data;
+
     try {
       if (name === "google") {
         provider = new GoogleAuthProvider();

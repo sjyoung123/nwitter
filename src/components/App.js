@@ -24,10 +24,23 @@ function App() {
     });
   }, []);
 
+  const refreshUser = () => {
+    setUserObj({
+      displayName: authService.currentUser.displayName
+        ? authService.currentUser.displayName
+        : "Anonymous",
+      uid: authService.currentUser.uid,
+    });
+  };
+
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} />
+        <AppRouter
+          isLoggedIn={isLoggedIn}
+          userObj={userObj}
+          refreshUser={refreshUser}
+        />
       ) : (
         "Loading.."
       )}

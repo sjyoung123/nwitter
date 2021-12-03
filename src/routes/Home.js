@@ -97,7 +97,7 @@ const Home = ({ userObj }) => {
         <input type="submit" value="Nweet" />
         {preview && (
           <div>
-            <img src={preview} width="50px" height="50px" />
+            <img src={preview} width="50px" height="50px" alt="previewImage" />
             <input type="submit" value="Clear" onClick={onPreviewClear} />
           </div>
         )}
