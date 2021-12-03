@@ -36,7 +36,7 @@ const Home = ({ userObj }) => {
     event.preventDefault();
     let previewUrl = "";
     if (preview) {
-      const previewRef = ref(storageService, `${userObj.uid}/${Date.now()}`);
+      const previewRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
       await uploadString(previewRef, preview, "data_url");
       previewUrl = await getDownloadURL(previewRef);
     }
